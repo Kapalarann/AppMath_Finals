@@ -177,7 +177,6 @@ public class EnhancedMeshGenerator : MonoBehaviour
         playerVelocity.y -= verticalMult * gravity * Time.deltaTime;
     }
 
-    // We use 'ref' for the position so we can modify it and return a bool for the reset status
     bool MoveAndCollide(ref Vector3 currentPos, Vector3 movement, bool isHorizontal)
     {
         Vector3 targetPos = currentPos + movement;
@@ -190,10 +189,9 @@ public class EnhancedMeshGenerator : MonoBehaviour
 
                 if (invincibilityTimer <= 0f && (hazardIds.Contains(id) || enemyIds.Contains(id)))
                 {
-                    // If HandlePlayerDamage returns true, it means ResetPlayer() was called
                     if (HandlePlayerDamage(id))
                     {
-                        return true; // Report that a reset occurred!
+                        return true;
                     }
                     return false;
                 }
@@ -202,12 +200,12 @@ public class EnhancedMeshGenerator : MonoBehaviour
             if (!isHorizontal && playerVelocity.y < 0) isGrounded = true;
             if (!isHorizontal) playerVelocity.y = 0;
 
-            return false; // Collision happened, but no reset
+            return false;
         }
 
         if (!isHorizontal) isGrounded = false;
-        currentPos = targetPos; // Update the position ref
-        return false; // Move successful, no reset
+        currentPos = targetPos;
+        return false;
     }
 
     void UpdateEnemies()

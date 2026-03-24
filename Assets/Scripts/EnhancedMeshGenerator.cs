@@ -234,7 +234,8 @@ public class EnhancedMeshGenerator : MonoBehaviour
 
     void HandlePlayerDamage(int hitId)
     {
-        int damage = 0;
+        Debug.Log("PlayeGot hit by " + hitId);
+        int damage = 1;
         int hIdx = hazardIds.IndexOf(hitId);
         if (hIdx != -1) damage = hazards[hIdx].damage;
         else

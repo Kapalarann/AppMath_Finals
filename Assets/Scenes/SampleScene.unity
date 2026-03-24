@@ -156,8 +156,8 @@ Camera:
   m_GameObject: {fileID: 330585543}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.89433956, g: 0.89433956, b: 0.89433956, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -504,12 +504,28 @@ MonoBehaviour:
     scale: {x: 10, y: 1, z: 1}
     rotationEuler: {x: 0, y: 0, z: 0}
     isStatic: 1
-  - position: {x: 13, y: -5, z: 0}
+  - position: {x: 13, y: -4.51, z: 0}
+    scale: {x: 10, y: 2, z: 1}
+    rotationEuler: {x: 0, y: 0, z: 0}
+    isStatic: 1
+  - position: {x: 43, y: -0.33, z: 0}
     scale: {x: 10, y: 1, z: 1}
     rotationEuler: {x: 0, y: 0, z: 0}
     isStatic: 1
-  - position: {x: 43, y: -5, z: 0}
-    scale: {x: 10, y: 1, z: 1}
+  - position: {x: 14, y: -2.46, z: 0}
+    scale: {x: 8, y: 2.07, z: 1}
+    rotationEuler: {x: 0, y: 0, z: 0}
+    isStatic: 1
+  - position: {x: 23.9, y: -2, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    rotationEuler: {x: 0, y: 0, z: 0}
+    isStatic: 1
+  - position: {x: 32.7, y: -2, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    rotationEuler: {x: 0, y: 0, z: 0}
+    isStatic: 1
+  - position: {x: 38.6, y: -2.63, z: 0}
+    scale: {x: 1.19, y: 5.57, z: 1}
     rotationEuler: {x: 0, y: 0, z: 0}
     isStatic: 1
   enemies:
@@ -532,13 +548,25 @@ MonoBehaviour:
     scale: {x: 20, y: 1, z: 1}
     rotationEuler: {x: 0, y: 0, z: 0}
     damage: 1
+  - name: Lava Block
+    position: {x: 58, y: -0.34, z: 0}
+    scale: {x: 20, y: 1, z: 1}
+    rotationEuler: {x: 0, y: 0, z: 0}
+    damage: 1
   powerups:
-  - name: Invincible
-    type: 0
-    position: {x: 16, y: -3, z: 0}
+  - name: DoubleJumo
+    type: 1
+    position: {x: 16, y: -0.79, z: 0}
     duration: 10
     scale: {x: 0.5, y: 0.5, z: 0.5}
     isCollected: 0
+  - name: DoubleJumo
+    type: 2
+    position: {x: 38.7, y: 1.07, z: 0}
+    duration: 10
+    scale: {x: 0.5, y: 0.5, z: 0.5}
+    isCollected: 0
+  gravityReductionScale: 0.5
   groundY: -20
   groundWidth: 200
   groundDepth: 1

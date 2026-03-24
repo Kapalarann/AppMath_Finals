@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NUnit.Framework.Constraints;
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -112,6 +113,7 @@ public class EnhancedMeshGenerator : MonoBehaviour
         UpdatePlayer();
         UpdateEnemies();
         RenderBoxes();
+        GameUI.Instance.UpdateLives(currentHealth);
     }
 
     void UpdateTimers()
@@ -243,7 +245,7 @@ public class EnhancedMeshGenerator : MonoBehaviour
 
     bool HandlePlayerDamage(int hitId)
     {
-        int damage = 1;
+        int damage = 0;
         int hIdx = hazardIds.IndexOf(hitId);
         if (hIdx != -1) damage = hazards[hIdx].damage;
         else
@@ -307,6 +309,7 @@ public class EnhancedMeshGenerator : MonoBehaviour
             case PowerupType.Invincibility: invincibilityTimer = data.duration; break;
             case PowerupType.DoubleJump: maxJumps = 2; jumpsRemaining++; break;
             case PowerupType.LowGravity: gravity *= gravityReductionScale; break;
+            case PowerupType.Token: GameUI.Instance.WinPanel.SetActive(true); Time.timeScale = 0f; break;
         }
     }
 
@@ -317,7 +320,7 @@ public class EnhancedMeshGenerator : MonoBehaviour
         playerVelocity = Vector3.zero;
         isGrounded = false;
         ResetPowerupEffects();
-
+        GameUI.Instance.RestartTimer();
         int index = colliderIds.IndexOf(playerID);
         if (index == -1) return;
 
@@ -576,7 +579,7 @@ public class EnhancedMeshGenerator : MonoBehaviour
     public int damage = 1; 
 }
 
-public enum PowerupType { Invincibility, DoubleJump, LowGravity }
+public enum PowerupType { Invincibility, DoubleJump, LowGravity, Token}
 [Serializable] public class PowerupData { 
     public string name = "New Powerup"; 
     public PowerupType type; 

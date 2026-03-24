@@ -35,6 +35,7 @@ public class EnhancedMeshGenerator : MonoBehaviour
     public float inputBuffer = 0.5f;
     private int maxJumps = 1;
     private int jumpsRemaining;
+    private float baseGravity;
 
     [Header("Player Stats")]
     public int maxHealth = 3;
@@ -84,6 +85,7 @@ public class EnhancedMeshGenerator : MonoBehaviour
         SpawnPowerups();
 
         currentHealth = maxHealth;
+        baseGravity = gravity;
     }
 
     void SetupCamera()
@@ -135,10 +137,12 @@ public class EnhancedMeshGenerator : MonoBehaviour
 
         // Horizontal Movement
         float moveInput = (Input.GetKey(KeyCode.A) ? -1 : 0) + (Input.GetKey(KeyCode.D) ? 1 : 0);
-        pos = MoveAndCollide(pos, new Vector3(moveInput * movementSpeed * Time.deltaTime, 0, 0), true);
+        if (MoveAndCollide(ref pos, new Vector3(moveInput * movementSpeed * Time.deltaTime, 0, 0), true))
+            return;
 
         // Vertical Movement
-        pos = MoveAndCollide(pos, new Vector3(0, playerVelocity.y * Time.deltaTime, 0), false);
+        if (MoveAndCollide(ref pos, new Vector3(0, playerVelocity.y * Time.deltaTime, 0), false))
+            return;
 
         // Finalize Player State
         if (isGrounded && playerVelocity.y <= 0)
@@ -173,7 +177,8 @@ public class EnhancedMeshGenerator : MonoBehaviour
         playerVelocity.y -= verticalMult * gravity * Time.deltaTime;
     }
 
-    Vector3 MoveAndCollide(Vector3 currentPos, Vector3 movement, bool isHorizontal)
+    // We use 'ref' for the position so we can modify it and return a bool for the reset status
+    bool MoveAndCollide(ref Vector3 currentPos, Vector3 movement, bool isHorizontal)
     {
         Vector3 targetPos = currentPos + movement;
 
@@ -182,21 +187,27 @@ public class EnhancedMeshGenerator : MonoBehaviour
             foreach (int id in hitIds)
             {
                 if (powerupIds.Contains(id)) CollectPowerup(id);
+
                 if (invincibilityTimer <= 0f && (hazardIds.Contains(id) || enemyIds.Contains(id)))
                 {
-                    HandlePlayerDamage(id);
-                    return currentPos; // Stop moving if reset/hit
+                    // If HandlePlayerDamage returns true, it means ResetPlayer() was called
+                    if (HandlePlayerDamage(id))
+                    {
+                        return true; // Report that a reset occurred!
+                    }
+                    return false;
                 }
             }
 
             if (!isHorizontal && playerVelocity.y < 0) isGrounded = true;
             if (!isHorizontal) playerVelocity.y = 0;
 
-            return currentPos;
+            return false; // Collision happened, but no reset
         }
 
         if (!isHorizontal) isGrounded = false;
-        return targetPos;
+        currentPos = targetPos; // Update the position ref
+        return false; // Move successful, no reset
     }
 
     void UpdateEnemies()
@@ -232,9 +243,8 @@ public class EnhancedMeshGenerator : MonoBehaviour
         }
     }
 
-    void HandlePlayerDamage(int hitId)
+    bool HandlePlayerDamage(int hitId)
     {
-        Debug.Log("PlayeGot hit by " + hitId);
         int damage = 1;
         int hIdx = hazardIds.IndexOf(hitId);
         if (hIdx != -1) damage = hazards[hIdx].damage;
@@ -247,14 +257,19 @@ public class EnhancedMeshGenerator : MonoBehaviour
         currentHealth -= damage;
         invincibilityTimer = invincibilityDuration;
 
-        if (currentHealth <= 0) ResetPlayer();
+        if (currentHealth <= 0)
+        {
+            ResetPlayer();
+            return true;
+        }
+        return false;
     }
 
     void ResetPowerupEffects()
     {
         maxJumps = 1;
         jumpsRemaining = Mathf.Min(jumpsRemaining, maxJumps);
-        gravity = 9.8f;
+        gravity = baseGravity;
     }
 
     void UpdatePlayerMatrix(int index, Vector3 pos, Quaternion rot, Vector3 scale)
@@ -287,6 +302,8 @@ public class EnhancedMeshGenerator : MonoBehaviour
         data.isCollected = true;
         powerupTimer = data.duration;
 
+        CollisionManager.Instance.RemoveCollider(hitId);
+
         switch (data.type)
         {
             case PowerupType.Invincibility: invincibilityTimer = data.duration; break;
@@ -308,6 +325,8 @@ public class EnhancedMeshGenerator : MonoBehaviour
 
         DecomposeMatrix(matrices[index], out _, out Quaternion rot, out Vector3 scale);
         UpdatePlayerMatrix(index, playerStartPos, rot, scale);
+
+        Debug.Log("Player Reset");
     }
 
     void RenderBoxes()
@@ -559,6 +578,7 @@ public class EnhancedMeshGenerator : MonoBehaviour
     public int damage = 1; 
 }
 
+public enum PowerupType { Invincibility, DoubleJump, LowGravity }
 [Serializable] public class PowerupData { 
     public string name = "New Powerup"; 
     public PowerupType type; 
@@ -568,5 +588,3 @@ public class EnhancedMeshGenerator : MonoBehaviour
     
     [HideInInspector] public bool isCollected = false; 
 }
-
-public enum PowerupType { Invincibility, DoubleJump, LowGravity }

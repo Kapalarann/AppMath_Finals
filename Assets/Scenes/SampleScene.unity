@@ -542,17 +542,17 @@ MonoBehaviour:
     position: {x: 6.5, y: -5, z: 0}
     scale: {x: 3, y: 1, z: 1}
     rotationEuler: {x: 0, y: 0, z: 0}
-    damage: 1
+    damage: 3
   - name: Lava Block
     position: {x: 28, y: -5, z: 0}
     scale: {x: 20, y: 1, z: 1}
     rotationEuler: {x: 0, y: 0, z: 0}
-    damage: 1
+    damage: 3
   - name: Lava Block
     position: {x: 58, y: -0.34, z: 0}
     scale: {x: 20, y: 1, z: 1}
     rotationEuler: {x: 0, y: 0, z: 0}
-    damage: 1
+    damage: 3
   powerups:
   - name: DoubleJumo
     type: 1
